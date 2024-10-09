@@ -1,0 +1,31 @@
+name: CI/CD for OpenCog Installer
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Build Installer
+        run: |
+          cargo build --release
+
+      - name: Run Tests
+        run: |
+          cargo test --release
