@@ -1,0 +1,15 @@
+FROM ubuntu:20.04
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    cmake \
+    # Add other dependencies as needed
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the Rust installer binary
+COPY target/release/opencog_installer /usr/local/bin/opencog_installer
+
+# Set entrypoint
+ENTRYPOINT ["opencog_installer"]
