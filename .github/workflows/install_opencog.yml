@@ -1,0 +1,36 @@
+# .github/workflows/install_opencog.yml
+name: Install OpenCog Hyperon
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  install-opencog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: Build Installer
+        run: |
+          cd opencog_installer
+          cargo build --release
+
+      - name: Execute Installer
+        run: |
+          sudo ./opencog_installer/target/release/opencog_installer --url http://raw.github.com/opencog/ocpkg/master/ocpkg
+
+      - name: Verify Installation
+        run: |
+          octool --version
