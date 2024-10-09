@@ -1,0 +1,34 @@
+# .github/workflows/deploy.yml
+name: Deploy OpenCog Hyperon
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build Installer
+        run: |
+          cd opencog_installer
+          cargo build --release
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            sudo ./opencog_installer/target/release/opencog_installer --url http://raw.github.com/opencog/ocpkg/master/ocpkg
